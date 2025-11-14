@@ -1,0 +1,38 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'local'
+    environment: 'development'
+
+scrape_configs:
+  # Scrape Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Scrape GPU metrics
+  # From host (Windows/Mac - GPU exporter running on host)
+  - job_name: 'gpu-exporter'
+    static_configs:
+      - targets: ['host.docker.internal:9100']
+        labels:
+          service: 'demo-service'
+          namespace: 'default'
+  # Option: From Docker container (if using nvidia-docker on Linux)
+  # - job_name: 'gpu-exporter-docker'
+  #   static_configs:
+  #     - targets: ['gpu-exporter:9100']
+  #       labels:
+  #         service: 'demo-service'
+  #         namespace: 'default'
+
+  # Scrape LLM Process Monitor
+  # From host (Windows/Mac - LLM monitor running on host)
+  - job_name: 'llm-monitor'
+    static_configs:
+      - targets: ['host.docker.internal:9101']
+        labels:
+          service: 'llm-monitor'
+          namespace: 'default'
+
